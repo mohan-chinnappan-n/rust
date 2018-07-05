@@ -67,6 +67,9 @@ pub trait MonoItemExt<'a, 'tcx>: fmt::Debug + BaseMonoItemExt<'a, 'tcx> {
                     span_bug!(item.span, "Mismatch between hir::Item type and MonoItem type")
                 }
             }
+            MonoItem::CustomSection(def_id) => {
+                base::define_custom_section(cx, def_id);
+            }
             MonoItem::Fn(instance) => {
                 base::codegen_instance(&cx, instance);
             }
@@ -98,6 +101,7 @@ pub trait MonoItemExt<'a, 'tcx>: fmt::Debug + BaseMonoItemExt<'a, 'tcx> {
             MonoItem::Fn(instance) => {
                 predefine_fn(cx, instance, linkage, visibility, &symbol_name);
             }
+            MonoItem::CustomSection(..) => {}
             MonoItem::GlobalAsm(..) => {}
         }
 
@@ -116,6 +120,9 @@ pub trait MonoItemExt<'a, 'tcx>: fmt::Debug + BaseMonoItemExt<'a, 'tcx> {
             }
             MonoItem::Static(id) => {
                 format!("Static({:?})", id)
+            }
+            MonoItem::CustomSection(id) => {
+                format!("CustomSection({:?})", id)
             }
             MonoItem::GlobalAsm(id) => {
                 format!("GlobalAsm({:?})", id)
